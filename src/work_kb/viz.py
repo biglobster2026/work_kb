@@ -35,11 +35,12 @@ _HEAT_LO = (243, 221, 196)  # pale peach — a near-empty cluster
 _HEAT_HI = (232, 101, 10)  # deep brand orange — a hot cluster
 
 # Canvas + ring radii. Foundation hugs the core; artifacts sit at the rim.
-_W, _H = 1040, 820
-_CX, _CY = 520, 430
-_R_FOUNDATION = 150
-_R_DETAIL = 275
-_R_ARTIFACT = 380
+# Kept compact so the whole tree fits one screen without scrolling.
+_W, _H = 900, 660
+_CX, _CY = 450, 330
+_R_FOUNDATION = 108
+_R_DETAIL = 195
+_R_ARTIFACT = 268
 
 
 @dataclass
@@ -301,7 +302,8 @@ _TEMPLATE = """<!DOCTYPE html>
   .stage {{ position: relative; background:
     radial-gradient(circle at 50% 52%, #fffefb 0%, var(--bg) 78%);
     border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }}
-  svg {{ width: 100%; height: auto; display: block; }}
+  svg {{ width: 100%; height: auto; max-height: 78vh; display: block;
+    margin: 0 auto; }}
   .ring {{ fill: none; stroke: #efe7db; stroke-dasharray: 3 6; }}
   .ringlbl {{ fill: #c9bba6; font-size: 11px; text-anchor: middle;
     letter-spacing: .12em; text-transform: uppercase; }}
