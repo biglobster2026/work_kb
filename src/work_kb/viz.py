@@ -214,16 +214,32 @@ def _svg(nodes: list[_Node]) -> str:
         'xmlns="http://www.w3.org/2000/svg" role="img" '
         'aria-label="Knowledge base radial overview">'
     ]
-    # Tier guide rings, faintly, so the frequency gradient is legible.
-    for r, lbl in (
-        (_R_FOUNDATION, "core"),
-        (_R_DETAIL, "branches"),
-        (_R_ARTIFACT, "leaves"),
+    # Tier band zones — filled concentric annuli so the three tiers read as
+    # crisp rings, not scatter. Warmth decreases outward (core hottest), which
+    # doubles as the frequency encoding: the center is what you consult most.
+    # Boundaries sit midway between adjacent node rings; the outer edge clears
+    # the largest leaf bubble.
+    b_core = (_R_FOUNDATION + _R_DETAIL) / 2  # core | branches divide
+    b_branch = (_R_DETAIL + _R_ARTIFACT) / 2  # branches | leaves divide
+    b_outer = _R_ARTIFACT + 48  # outer rim
+    # Draw largest first so smaller bands paint on top → clean annuli.
+    for r, fill in (
+        (b_outer, "#f7f0e4"),  # leaves zone (palest)
+        (b_branch, "#fbead6"),  # branches zone
+        (b_core, "#fcdcbb"),  # core zone (warmest)
     ):
-        parts.append(
-            f'<circle cx="{_CX}" cy="{_CY}" r="{r}" class="ring"/>'
-            f'<text x="{_CX}" y="{_CY - r - 6}" class="ringlbl">{lbl}</text>'
-        )
+        parts.append(f'<circle cx="{_CX}" cy="{_CY}" r="{r:.1f}" class="band" fill="{fill}"/>')
+    # Crisp boundary strokes between zones.
+    for r in (b_core, b_branch, b_outer):
+        parts.append(f'<circle cx="{_CX}" cy="{_CY}" r="{r:.1f}" class="bandline"/>')
+    # Zone labels, seated just inside the top of each band.
+    for r_lo, r_hi, lbl in (
+        (0.0, b_core, "core · always loaded"),
+        (b_core, b_branch, "branches · on demand"),
+        (b_branch, b_outer, "leaves · searched"),
+    ):
+        ymid = _CY - (r_lo + r_hi) / 2
+        parts.append(f'<text x="{_CX}" y="{ymid:.1f}" class="ringlbl">{lbl}</text>')
     # Edges: root → every non-root node (drawn first, under the nodes).
     root = nodes[0]
     for n in nodes[1:]:
@@ -302,9 +318,10 @@ _TEMPLATE = """<!DOCTYPE html>
     radial-gradient(circle at 50% 52%, #fffefb 0%, var(--bg) 78%);
     border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }}
   svg {{ width: 100%; height: auto; display: block; }}
-  .ring {{ fill: none; stroke: #efe7db; stroke-dasharray: 3 6; }}
-  .ringlbl {{ fill: #c9bba6; font-size: 11px; text-anchor: middle;
-    letter-spacing: .12em; text-transform: uppercase; }}
+  .band {{ stroke: none; }}
+  .bandline {{ fill: none; stroke: #e7d6bf; stroke-width: 1; }}
+  .ringlbl {{ fill: #b69a72; font-size: 10.5px; text-anchor: middle;
+    letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }}
   .edge {{ stroke: var(--line); stroke-width: 1; }}
   .node circle {{ cursor: pointer; transition: r .12s ease, filter .12s ease; }}
   .node:hover circle, .node:focus circle {{ filter: brightness(1.05)
