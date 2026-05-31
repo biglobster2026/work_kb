@@ -2,7 +2,7 @@
 
 # Working with this knowledge base
 
-This workspace contains a three-tier knowledge base under `kb/`. When answering project questions, VS Code Copilot should consult it first, using the cheapest tier that can answer.
+This workspace contains a three-tier knowledge base under `kb/`. When answering project questions, Claude should consult it first, using the cheapest tier that can answer.
 
 ## Retrieval protocol
 

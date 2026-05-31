@@ -22,10 +22,26 @@ gets only the structure it can afford.
 
 ## The integration surface
 
-`kb build` generates **`.github/copilot-instructions.md`** (auto-loaded by VS
-Code Copilot for the workspace) and a vendor-neutral **`AGENTS.md`**. Both
-encode the retrieval protocol above. That single generated file *is* "make the
-KB visible to the agent" — nothing else to wire up.
+`kb build` emits an instruction file for every major coding-agent convention
+from a **single canonical protocol** (so they never drift), plus a
+machine-readable catalog. Nothing else to wire up — drop the repo in and the
+agent picks it up.
+
+| File | Agent / convention |
+|------|--------------------|
+| `.github/copilot-instructions.md` | GitHub Copilot, repo-wide (auto-applied) |
+| `.github/instructions/knowledge-base.instructions.md` | GitHub Copilot, path-scoped (`applyTo: "**"` frontmatter) |
+| `AGENTS.md` | OpenAI Codex + the agents.md ecosystem (Cursor, Windsurf, Jules, Factory, Amp, Devin…) |
+| `CLAUDE.md` | Claude Code |
+| `.cursor/rules/knowledge-base.mdc` | Cursor project rule (MDC, `alwaysApply`) |
+| `kb/index.json` | Machine-readable catalog for tools/programs |
+| `kb/overview.html` | Human knowledge-tree overview (open in a browser) |
+
+Adding or fixing a convention is a one-line entry in `agentfiles.TARGETS` — these
+formats change often, so the registry is built to absorb that. `kb/index.json`
+carries a `schema_version` and describes each tier's retrieval mode, item paths,
+and topic/project clusters, so a program can consume the KB without parsing
+markdown (artifacts stay clustered-by-count, never enumerated).
 
 ## Usage
 
@@ -46,9 +62,13 @@ kb pack "auth retry"   # assemble one CONTEXT.md for browse-less agents
 ## Design notes
 
 - **Deterministic substrate.** Every core module (`models`, `build`,
-  `validate`, `recall`) is a pure function — no I/O, no LLM. `store` is the only
-  thing that touches disk; `cli` is a thin shell. The tests assert real
-  behavior, not tautologies.
+  `validate`, `recall`, `viz`, `agentfiles`, `index`) is a pure function — no
+  I/O, no LLM. `store` is the only thing that touches disk; `cli` is a thin
+  shell. The tests assert real behavior, not tautologies.
+- **One protocol, many formats.** The agent instruction files all render from a
+  single canonical body in `agentfiles.py`, so Copilot / Codex / Claude / Cursor
+  never see divergent guidance. The vendor formats change often; the registry
+  makes each change a one-liner.
 - **Soft caps, not hard limits.** `validate` *warns* as a tier fills. The
   foundation cap is load-bearing: tier 1 must stay small enough to dump into an
   agent's context wholesale.

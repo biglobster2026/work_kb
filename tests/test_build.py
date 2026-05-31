@@ -1,7 +1,6 @@
 from work_kb.build import (
     build,
     render_artifact_manifest,
-    render_copilot_instructions,
     render_detail_index,
     render_foundation_index,
     render_tag_pages,
@@ -50,21 +49,26 @@ def test_artifact_manifest_does_not_enumerate():
     assert "acme" in out  # but projects present are summarized
 
 
-def test_copilot_instructions_carry_counts():
-    out = render_copilot_instructions({Tier.FOUNDATION: 1, Tier.DETAIL: 2, Tier.ARTIFACT: 1})
-    assert "(1 items)" in out
-    assert "kb/00-foundation/INDEX.md" in out
-    assert "SEARCH" in out
-
-
 def test_build_produces_all_core_files():
     files = build(F + D + A)
     assert "kb/00-foundation/INDEX.md" in files
     assert "kb/10-details/INDEX.md" in files
     assert "kb/20-artifacts/MANIFEST.md" in files
-    assert ".github/copilot-instructions.md" in files
-    assert "AGENTS.md" in files
+    assert "kb/overview.html" in files
+    assert "kb/index.json" in files
     assert "kb/10-details/by-tag/auth.md" in files
+
+
+def test_build_emits_every_agent_convention():
+    files = build(F + D + A)
+    for path in (
+        ".github/copilot-instructions.md",
+        ".github/instructions/knowledge-base.instructions.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+        ".cursor/rules/knowledge-base.mdc",
+    ):
+        assert path in files, f"missing agent file {path}"
 
 
 def test_build_is_deterministic():

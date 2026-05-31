@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from work_kb.agentfiles import render_agent_files
+from work_kb.index import render_index_json
 from work_kb.models import Item, Tier, shard
 from work_kb.viz import render_overview_html
 
@@ -130,44 +132,12 @@ def render_artifact_manifest(items: list[Item]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_copilot_instructions(counts: dict[Tier, int]) -> str:
-    """The integration surface. VS Code Copilot auto-loads this file for the
-    workspace; it teaches the agent the three-tier retrieval protocol. No
-    service, no admin — just a file."""
-    return (
-        f"{_GENERATED_BANNER}\n\n"
-        "# Working with this knowledge base\n\n"
-        "This workspace contains a three-tier knowledge base under `kb/`. "
-        "Consult it before answering project questions, using the cheapest tier "
-        "that can answer.\n\n"
-        "## Retrieval protocol\n\n"
-        f"1. **Foundation** ({counts[Tier.FOUNDATION]} items) — read "
-        "`kb/00-foundation/INDEX.md` first. It is small and always relevant; "
-        "read the whole thing.\n"
-        f"2. **Details** ({counts[Tier.DETAIL]} items) — for specifics, open "
-        "`kb/10-details/INDEX.md` (a topic map), pick a topic, then open only "
-        "the linked items you need. Do not load the whole tier.\n"
-        f"3. **Artifacts** ({counts[Tier.ARTIFACT]} items) — for notes, "
-        "snippets, and logs, SEARCH `kb/20-artifacts/items/` with your "
-        "file-search tool. This tier is not enumerated; find by keyword or by "
-        "frontmatter (`project:`, `tags:`).\n\n"
-        "## Item format\n\n"
-        "Every item is a markdown file with YAML frontmatter: `slug`, `tier`, "
-        "`title`, optional `tags`, `project`, `created`, and `links` "
-        "(cross-references to other items by slug). Prefer items whose "
-        "`project` or `tags` match the question.\n"
-    )
-
-
-def render_agents_md(counts: dict[Tier, int]) -> str:
-    """Vendor-neutral twin of the Copilot file, for any other file-reading
-    agent (Claude, Cursor, …) that looks for AGENTS.md."""
-    body = render_copilot_instructions(counts)
-    return body.replace("VS Code Copilot", "your agent", 1)
-
-
 def build(items: list[Item]) -> dict[str, str]:
-    """Pure compiler: items -> {repo-relative path: file content}."""
+    """Pure compiler: items -> {repo-relative path: file content}.
+
+    Emits: per-tier navigation (INDEX/MANIFEST + by-tag pages), the HTML
+    overview, the machine-readable `kb/index.json`, and one instruction file per
+    agent convention (see ``agentfiles.TARGETS``)."""
     tiers = _by_tier(items)
     counts = {t: len(tiers[t]) for t in Tier}
 
@@ -175,10 +145,10 @@ def build(items: list[Item]) -> dict[str, str]:
         f"kb/{Tier.FOUNDATION.dirname}/INDEX.md": render_foundation_index(tiers[Tier.FOUNDATION]),
         f"kb/{Tier.DETAIL.dirname}/INDEX.md": render_detail_index(tiers[Tier.DETAIL]),
         f"kb/{Tier.ARTIFACT.dirname}/MANIFEST.md": render_artifact_manifest(tiers[Tier.ARTIFACT]),
-        ".github/copilot-instructions.md": render_copilot_instructions(counts),
-        "AGENTS.md": render_agents_md(counts),
         "kb/overview.html": render_overview_html(items),
+        "kb/index.json": render_index_json(items),
     }
+    files.update(render_agent_files(counts))
     for relpath, content in render_tag_pages(tiers[Tier.DETAIL]).items():
         files[f"kb/{relpath}"] = content
     return files

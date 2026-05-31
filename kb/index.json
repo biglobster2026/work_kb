@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "generated_by": "kb build",
+  "counts": {
+    "foundation": 5,
+    "detail": 11,
+    "artifact": 20
+  },
+  "tiers": {
+    "foundation": {
+      "retrieval": "load-all",
+      "index": "kb/00-foundation/INDEX.md",
+      "items": [
+        {
+          "slug": "example-data-contracts",
+          "title": "Example - data contracts",
+          "tags": [
+            "data"
+          ],
+          "project": null,
+          "path": "kb/00-foundation/items/example-data-contracts.md",
+          "links": []
+        },
+        {
+          "slug": "example-deploy-topology",
+          "title": "Example - deploy topology",
+          "tags": [
+            "infra"
+          ],
+          "project": null,
+          "path": "kb/00-foundation/items/example-deploy-topology.md",
+          "links": []
+        },
+        {
+          "slug": "example-north-star-metric",
+          "title": "Example - north star metric",
+          "tags": [
+            "overview",
+            "metrics"
+          ],
+          "project": null,
+          "path": "kb/00-foundation/items/example-north-star-metric.md",
+          "links": []
+        },
+        {
+          "slug": "example-security-posture",
+          "title": "Example - security posture",
+          "tags": [
+            "security"
+          ],
+          "project": null,
+          "path": "kb/00-foundation/items/example-security-posture.md",
+          "links": []
+        },
+        {
+          "slug": "example-project-mission",
+          "title": "Example — project mission",
+          "tags": [
+            "overview"
+          ],
+          "project": null,
+          "path": "kb/00-foundation/items/example-project-mission.md",
+          "links": []
+        }
+      ]
+    },
+    "detail": {
+      "retrieval": "navigate",
+      "index": "kb/10-details/INDEX.md",
+      "topics": [
+        {
+          "tag": "auth",
+          "count": 4,
+          "path": "kb/10-details/by-tag/auth.md"
+        },
+        {
+          "tag": "db",
+          "count": 3,
+          "path": "kb/10-details/by-tag/db.md"
+        },
+        {
+          "tag": "ops",
+          "count": 3,
+          "path": "kb/10-details/by-tag/ops.md"
+        },
+        {
+          "tag": "perf",
+          "count": 3,
+          "path": "kb/10-details/by-tag/perf.md"
+        },
+        {
+          "tag": "reliability",
+          "count": 3,
+          "path": "kb/10-details/by-tag/reliability.md"
+        },
+        {
+          "tag": "cache",
+          "count": 2,
+          "path": "kb/10-details/by-tag/cache.md"
+        },
+        {
+          "tag": "security",
+          "count": 1,
+          "path": "kb/10-details/by-tag/security.md"
+        }
+      ],
+      "items": [
+        {
+          "slug": "example-alert-thresholds",
+          "title": "Example - alert thresholds",
+          "tags": [
+            "ops",
+            "reliability"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/67/example-alert-thresholds.md",
+          "links": []
+        },
+        {
+          "slug": "example-auth-retry-uses-jitter",
+          "title": "Example - auth retry uses jitter",
+          "tags": [
+            "auth",
+            "reliability"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/f5/example-auth-retry-uses-jitter.md",
+          "links": []
+        },
+        {
+          "slug": "example-cache-ttl-ceilings",
+          "title": "Example - cache ttl ceilings",
+          "tags": [
+            "perf",
+            "cache"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/46/example-cache-ttl-ceilings.md",
+          "links": []
+        },
+        {
+          "slug": "example-cdn-invalidation-flow",
+          "title": "Example - cdn invalidation flow",
+          "tags": [
+            "perf",
+            "cache"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/13/example-cdn-invalidation-flow.md",
+          "links": []
+        },
+        {
+          "slug": "example-db-connection-pool-sizing",
+          "title": "Example - db connection pool sizing",
+          "tags": [
+            "db",
+            "perf"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/25/example-db-connection-pool-sizing.md",
+          "links": []
+        },
+        {
+          "slug": "example-migration-runbook",
+          "title": "Example - migration runbook",
+          "tags": [
+            "db",
+            "ops"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/56/example-migration-runbook.md",
+          "links": []
+        },
+        {
+          "slug": "example-on-call-escalation",
+          "title": "Example - on-call escalation",
+          "tags": [
+            "ops"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/5e/example-on-call-escalation.md",
+          "links": []
+        },
+        {
+          "slug": "example-read-replica-routing",
+          "title": "Example - read replica routing",
+          "tags": [
+            "db"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/29/example-read-replica-routing.md",
+          "links": []
+        },
+        {
+          "slug": "example-session-store-choice",
+          "title": "Example - session store choice",
+          "tags": [
+            "auth"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/f8/example-session-store-choice.md",
+          "links": []
+        },
+        {
+          "slug": "example-token-rotation-policy",
+          "title": "Example - token rotation policy",
+          "tags": [
+            "auth",
+            "security"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/b0/example-token-rotation-policy.md",
+          "links": []
+        },
+        {
+          "slug": "example-auth-jitter",
+          "title": "Example — auth retry uses jitter",
+          "tags": [
+            "auth",
+            "reliability"
+          ],
+          "project": "example",
+          "path": "kb/10-details/items/8b/example-auth-jitter.md",
+          "links": [
+            "example-project-mission"
+          ]
+        }
+      ]
+    },
+    "artifact": {
+      "retrieval": "search",
+      "search_root": "kb/20-artifacts/items/",
+      "clusters": [
+        {
+          "project": "acme-migration",
+          "count": 9
+        },
+        {
+          "project": "beta-launch",
+          "count": 6
+        },
+        {
+          "project": "infra-revamp",
+          "count": 4
+        },
+        {
+          "project": "example",
+          "count": 1
+        }
+      ]
+    }
+  }
+}

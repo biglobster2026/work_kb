@@ -2,7 +2,7 @@
 
 # Working with this knowledge base
 
-This workspace contains a three-tier knowledge base under `kb/`. Consult it before answering project questions, using the cheapest tier that can answer.
+This workspace contains a three-tier knowledge base under `kb/`. When answering project questions, the agent should consult it first, using the cheapest tier that can answer.
 
 ## Retrieval protocol
 
@@ -13,3 +13,7 @@ This workspace contains a three-tier knowledge base under `kb/`. Consult it befo
 ## Item format
 
 Every item is a markdown file with YAML frontmatter: `slug`, `tier`, `title`, optional `tags`, `project`, `created`, and `links` (cross-references to other items by slug). Prefer items whose `project` or `tags` match the question.
+
+## Machine-readable index
+
+`kb/index.json` is a structured catalog of the whole KB (tiers, item paths, topic and project clusters). Read it when you want to enumerate or filter programmatically instead of browsing the markdown.
