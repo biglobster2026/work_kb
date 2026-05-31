@@ -6,9 +6,9 @@ This workspace contains a three-tier knowledge base under `kb/`. Consult it befo
 
 ## Retrieval protocol
 
-1. **Foundation** (1 items) — read `kb/00-foundation/INDEX.md` first. It is small and always relevant; read the whole thing.
-2. **Details** (1 items) — for specifics, open `kb/10-details/INDEX.md` (a topic map), pick a topic, then open only the linked items you need. Do not load the whole tier.
-3. **Artifacts** (1 items) — for notes, snippets, and logs, SEARCH `kb/20-artifacts/items/` with your file-search tool. This tier is not enumerated; find by keyword or by frontmatter (`project:`, `tags:`).
+1. **Foundation** (5 items) — read `kb/00-foundation/INDEX.md` first. It is small and always relevant; read the whole thing.
+2. **Details** (11 items) — for specifics, open `kb/10-details/INDEX.md` (a topic map), pick a topic, then open only the linked items you need. Do not load the whole tier.
+3. **Artifacts** (20 items) — for notes, snippets, and logs, SEARCH `kb/20-artifacts/items/` with your file-search tool. This tier is not enumerated; find by keyword or by frontmatter (`project:`, `tags:`).
 
 ## Item format
 

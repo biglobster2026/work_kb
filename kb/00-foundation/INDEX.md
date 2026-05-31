@@ -2,6 +2,10 @@
 
 # Foundation — core project facts
 
-_1 items. Always relevant — read this whole file._
+_5 items. Always relevant — read this whole file._
 
+- **[Example - data contracts](items/example-data-contracts.md)**  ·  _data_
+- **[Example - deploy topology](items/example-deploy-topology.md)**  ·  _infra_
+- **[Example - north star metric](items/example-north-star-metric.md)**  ·  _overview, metrics_
+- **[Example - security posture](items/example-security-posture.md)**  ·  _security_
 - **[Example — project mission](items/example-project-mission.md)**  ·  _overview_

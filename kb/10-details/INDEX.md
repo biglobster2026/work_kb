@@ -2,8 +2,13 @@
 
 # Details — pull on demand
 
-_1 items across 2 topics. Pick a topic, open its page, then open only the items you need._
+_11 items across 7 topics. Pick a topic, open its page, then open only the items you need._
 
 ## Topics
-- [auth](by-tag/auth.md) (1)
-- [reliability](by-tag/reliability.md) (1)
+- [auth](by-tag/auth.md) (4)
+- [cache](by-tag/cache.md) (2)
+- [db](by-tag/db.md) (3)
+- [ops](by-tag/ops.md) (3)
+- [perf](by-tag/perf.md) (3)
+- [reliability](by-tag/reliability.md) (3)
+- [security](by-tag/security.md) (1)

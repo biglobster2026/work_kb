@@ -2,6 +2,8 @@
 
 # reliability
 
-_1 items._
+_3 items._
 
+- **[Example - alert thresholds](items/67/example-alert-thresholds.md)**  ·  _example_
+- **[Example - auth retry uses jitter](items/f5/example-auth-retry-uses-jitter.md)**  ·  _example_
 - **[Example — auth retry uses jitter](items/8b/example-auth-jitter.md)**  ·  _example_

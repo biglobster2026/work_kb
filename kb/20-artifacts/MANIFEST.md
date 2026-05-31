@@ -2,7 +2,7 @@
 
 # Artifacts — searchable archive
 
-_1 items. NOT enumerated — search this tier._
+_20 items. NOT enumerated — search this tier._
 
 ## How to find things here
 Use your file-search tool over `kb/20-artifacts/items/`:
@@ -10,7 +10,10 @@ Use your file-search tool over `kb/20-artifacts/items/`:
 - by frontmatter field, e.g. `project: <name>` or `tags:`.
 
 ## Projects present
+- acme-migration (9)
+- beta-launch (6)
 - example (1)
+- infra-revamp (4)
 
 ## Tags present
-`standup` (1)
+`standup` (20)

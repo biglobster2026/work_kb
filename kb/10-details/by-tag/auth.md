@@ -2,6 +2,9 @@
 
 # auth
 
-_1 items._
+_4 items._
 
+- **[Example - auth retry uses jitter](items/f5/example-auth-retry-uses-jitter.md)**  ·  _example_
+- **[Example - session store choice](items/f8/example-session-store-choice.md)**  ·  _example_
+- **[Example - token rotation policy](items/b0/example-token-rotation-policy.md)**  ·  _example_
 - **[Example — auth retry uses jitter](items/8b/example-auth-jitter.md)**  ·  _example_
