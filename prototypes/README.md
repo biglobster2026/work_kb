@@ -25,53 +25,51 @@ often than that.**
 Task definitions live in the `DAILY` / `WEEKLY` / `MONTHLY` arrays at the top of
 the `<script>` block.
 
-### Sharing it from OneDrive / SharePoint — one writer, many readers
+### Two modes, one file
 
-Put `cadence-board.html` and `state.js` side by side in the shared folder. The
-dashboard loads `state.js` on open, so everyone sees the same record without a
-server.
+The board decides which mode it is in from a single baked constant at the top
+of the file, `window.CADENCE_SNAPSHOT.published`.
 
-- **Readers** open the file and see whatever was last published. They can tick
-  things, but those marks stay in their own browser and change nothing for
-  anyone else.
-- **The owner** ticks as normal, then presses **Publish record…**, copies the
-  generated text over `state.js`, and lets OneDrive sync. The status bar counts
-  unpublished changes so it is obvious when the shared copy is behind.
+**Working copy** (`published: null`) — your live board. Everything you tick is
+persisted to `localStorage` immediately; nothing else is needed to use it.
 
-The sample history is never published — the first `state.js` starts from real
-marks only. Sample data also switches itself off automatically as soon as a
-`state.js` is present, so nobody sees invented history beside the real record.
+**Snapshot** (`published` set) — what the team consumes. Publishing serialises
+this page with the current marks baked in as a constant, so the snapshot is one
+self-contained HTML file with no sidecar and no server. It opens read-only:
+ticking does nothing, the publish and clear controls are hidden, and the status
+bar says what it is and when it was taken.
 
-This is deliberately single-writer. Two people publishing independently would
-each overwrite a whole-document snapshot and silently drop the other's marks; a
-file on a sync service cannot merge concurrent edits. If everyone needs to tick
-a genuinely shared board, use a SharePoint list, an Excel workbook (co-authoring
-handles the merge), or a hosted page with a backend.
+### Publishing
 
-Note that a `.json` or `.csv` sidecar will *not* work in place of `state.js`:
-`fetch()` and `XMLHttpRequest` are blocked on `file://` origins, while a
-`<script src>` is not. That is why the record is a `.js` file assigning
-`window.CADENCE_STATE`.
+Press **Publish snapshot…**. Chrome and Edge open a native save dialog, so you
+can save straight into the synced OneDrive folder — the File System Access API
+is permitted on a `file://` origin, which was verified rather than assumed.
+Other browsers fall back to a normal download that you then move into place.
 
-Also check how your tenant serves `.html` from SharePoint — the default strict
-browser file handling downloads HTML rather than rendering it. Opening through
-the synced OneDrive folder avoids this.
+The snapshot is built by cloning the live document, emptying every container
+that `render()` writes into, and replacing the baked constant. It therefore
+ships the application rather than a frozen rendering of it, and rebuilds itself
+on open like any other copy.
 
-### Running it without a shared record
+Sample history is never baked into a snapshot. While it is showing, the status
+bar says so, because otherwise a full-looking working copy would publish an
+almost empty board.
 
-Set `SHOW_SAMPLE_WHEN_EMPTY = false` at the top of the script for a board that
-starts completely empty. While it is `true` and no `state.js` exists, past days
-are pre-filled with fabricated history so the patterns are visible in a demo.
+### Running it without sample history
+
+Set `SHOW_SAMPLE_WHEN_EMPTY = false` at the top of the script for a working copy
+that starts completely empty.
 
 ### What travels with the file, and what doesn't
 
-Ticks are written to `localStorage`, not to the file — a page cannot write to
-its own file on disk, which is why publishing is a copy-paste step rather than
-a save. So the `.html` itself is byte-identical before and after you use it and
-carries none of your marks; everything shared travels in `state.js`.
+Ticks are written to `localStorage`, not into the file — a page cannot modify
+its own file on disk. Your working copy is therefore byte-identical before and
+after you use it, and carries none of your marks; publishing writes a *separate*
+file with the marks baked in.
 
-Storage is per browser and per profile: a private window starts empty, and
-clearing site data wipes it. Reads and writes are wrapped in `try`/`catch`, so
+Storage is per browser and per profile, so keep the working copy on one machine:
+a private window starts empty, and clearing site data wipes it. Publish
+regularly — the snapshot in the shared folder doubles as your backup. Reads and writes are wrapped in `try`/`catch`, so
 a browser that blocks storage on `file://` degrades to in-memory — ticks work
 for the session and reset on reload — rather than breaking the page.
 

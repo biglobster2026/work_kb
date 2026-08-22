@@ -1,7 +1,9 @@
 <title>Cadence Board</title>
-<!-- Optional shared record, published by the board's owner. Absent is fine:
-     the page works without it, it just starts empty. -->
-<script src="state.js"></script>
+<!-- Rewritten wholesale when a snapshot is published. A null `published` means
+     this is the working copy: live, editable, backed by localStorage. -->
+<script id="baked">
+window.CADENCE_SNAPSHOT = { "published": null, "marks": {} };
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
@@ -106,33 +108,18 @@ button{font:inherit; color:inherit; background:none; border:0; padding:0; cursor
 .pubbtn:hover{filter:brightness(1.08)}
 .pubbtn[disabled]{opacity:.45; cursor:default; filter:none}
 
-dialog{
-  border:1px solid var(--line); border-radius:12px; background:var(--surface); color:var(--ink);
-  padding:0; max-width:620px; width:calc(100% - 40px); box-shadow:var(--shadow);
-}
-dialog::backdrop{background:rgba(20,19,26,.45)}
-.dlg{padding:18px 20px 16px; display:flex; flex-direction:column; gap:12px}
-.dlg h2{font-size:17px; font-weight:700; letter-spacing:-.01em}
-.dlg p{margin:0; font-size:13px; color:var(--ink-2); max-width:62ch}
-.dlg code{
-  font-family:"JetBrains Mono",monospace; font-size:12px;
-  background:var(--surface-2); padding:1px 5px; border-radius:4px;
-}
-.dlg textarea{
-  width:100%; height:190px; resize:vertical; padding:10px 12px;
-  font-family:"JetBrains Mono",monospace; font-size:11.5px; line-height:1.5;
-  color:var(--ink); background:var(--surface-2);
-  border:1px solid var(--line); border-radius:8px;
-}
-.dlg-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-.dlg-actions .msg{font-size:12px; color:var(--ink-3); margin-right:auto}
-.dlg-actions button{
-  padding:6px 14px; border-radius:8px; border:1px solid var(--line);
-  background:var(--surface); font-size:12.5px; font-weight:600; color:var(--ink-2);
-}
-.dlg-actions button:hover{border-color:var(--ink-3); color:var(--ink)}
-.dlg-actions button.primary{background:var(--daily); border-color:var(--daily); color:var(--on-accent)}
-.dlg-actions button.primary:hover{filter:brightness(1.08)}
+.statusbar .msg{font-size:12px; color:var(--ink-3)}
+.statusbar.live .pip{background:var(--daily)}
+.statusbar.snap{background:var(--daily-wash); border-color:transparent}
+.statusbar.snap .pip{background:var(--daily)}
+.statusbar.snap, .statusbar.snap #statustext, .statusbar.snap b{color:var(--daily-ink)}
+
+/* a snapshot is for reading — drop every affordance that implies otherwise */
+body.readonly .task:hover{background:none}
+body.readonly .task, body.readonly button.cellbtn, body.readonly .cell{cursor:default}
+body.readonly button.cellbtn:hover .mark{transform:none}
+body.readonly .cell:hover{border-color:var(--line-soft)}
+body.readonly .chip:hover{border-color:transparent}
 
 /* ---------- layout ---------- */
 .layout{display:grid; grid-template-columns:minmax(0,1fr) 306px; gap:20px; align-items:start}
@@ -345,8 +332,8 @@ footer .reset{text-decoration:underline; text-underline-offset:2px}
     <span class="pip"></span>
     <span id="statustext">—</span>
     <span class="sb-actions">
-      <button class="linkbtn" id="discard" hidden>Discard my local changes</button>
-      <button class="pubbtn" id="publish">Publish record…</button>
+      <span class="msg" id="savemsg"></span>
+      <button class="pubbtn" id="publish">Publish snapshot…</button>
     </span>
   </div>
 
@@ -394,40 +381,23 @@ footer .reset{text-decoration:underline; text-underline-offset:2px}
 
   <footer>
     <span id="seednote"></span>
-    <span>Ticks are saved in this browser only. <button class="reset" id="reset">Clear my ticks</button></span>
+    <span id="resetline">Marks live in this browser. <button class="reset" id="reset">Clear them</button></span>
   </footer>
-  <dialog id="pubdlg">
-    <div class="dlg">
-      <h2>Publish the shared record</h2>
-      <p>Save this as <code>state.js</code> in the same folder as the dashboard, replacing the
-        file that is there. Everyone who opens the board after OneDrive syncs will see it.</p>
-      <textarea id="pubtext" readonly spellcheck="false"></textarea>
-      <div class="dlg-actions">
-        <span class="msg" id="pubmsg"></span>
-        <button id="pubcopy" class="primary">Copy to clipboard</button>
-        <button id="pubdl">Download state.js</button>
-        <button id="pubclose">Close</button>
-      </div>
-    </div>
-  </dialog>
 </div>
 
 <script>
-/* The shared record, published by the board's owner as state.js next to this file.
-   Reading it needs no server: a <script src> is exempt from the same-origin rule
-   that blocks fetch() on a local file. Absent or malformed, the board still runs. */
-const SHARED = (() => {
-  const raw = window.CADENCE_STATE;
-  if (!raw || typeof raw !== 'object') return {marks:{}, published:null, by:null, present:false};
-  const marks = (raw.marks && typeof raw.marks === 'object') ? raw.marks : raw;
-  return {marks, published: raw.published || null, by: raw.by || null, present:true};
+/* One file, two modes. The working copy is live and remembers everything in
+   localStorage. Publishing bakes the marks into a copy of this very page, and
+   that copy opens read-only — the team consumes it, nobody edits it. */
+const SNAP = (() => {
+  const raw = window.CADENCE_SNAPSHOT;
+  if (!raw || typeof raw !== 'object') return {published:null, marks:{}};
+  return {published: raw.published || null, marks: raw.marks || {}, density: raw.density};
 })();
+const READONLY = !!SNAP.published;
 
-/* Sample history makes the patterns visible in an empty demo. It stands down on
-   its own the moment a real shared record is present — nobody should ever see
-   invented history sitting next to the team's actual one. */
 const SHOW_SAMPLE_WHEN_EMPTY = true;
-const SEED_SAMPLE_HISTORY = SHOW_SAMPLE_WHEN_EMPTY && !SHARED.present;
+const SEED_SAMPLE_HISTORY = SHOW_SAMPLE_WHEN_EMPTY && !READONLY;
 
 const DAILY = [
   {id:'inbox',   name:'Inbox to zero',       hint:'08:30',  rel:.88},
@@ -466,7 +436,7 @@ const DOWS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sat
 const now = new Date();
 const TODAY = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 let view  = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
-let density = overrides.__density === 'min' ? 'min' : 'full';
+let density = (READONLY ? SNAP.density : overrides.__density) === 'min' ? 'min' : 'full';
 let focus = new Date(TODAY);
 
 const key = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -488,14 +458,14 @@ function dueOn(id, d){
 function isDone(id, d){
   if (!dueOn(id, d)) return false;
   const k = key(d) + '|' + id;
-  if (k in overrides) return overrides[k];      // my unpublished edit
-  if (k in SHARED.marks) return SHARED.marks[k];// the published shared record
+  if (READONLY) return SNAP.marks[k] === true;  // a snapshot shows exactly what was baked
+  if (k in overrides) return overrides[k];
   if (d >= TODAY) return false;                 // no invented history for today or ahead
   if (!SEED_SAMPLE_HISTORY) return false;       // clean board — only real ticks count
   return hash(k) < BY_ID[id].task.rel;          // seeded sample history
 }
 function toggle(id, d){
-  if (!dueOn(id, d)) return;
+  if (READONLY || !dueOn(id, d)) return;
   overrides[key(d) + '|' + id] = !isDone(id, d);
   save(); render();
 }
@@ -679,45 +649,84 @@ function buildTally(){
   document.getElementById('t-open').textContent = open;
 }
 
-/* ---------- shared record ---------- */
+/* ---------- snapshot ---------- */
 const isMark = k => k !== '__density';
-function localChanges(){
-  return Object.keys(overrides).filter(k =>
-    isMark(k) && overrides[k] !== (k in SHARED.marks ? SHARED.marks[k] : false));
+const markCount = () => Object.keys(overrides).filter(k => isMark(k) && overrides[k]).length;
+
+function stamp(){
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
+    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 }
-function mergedMarks(){
-  const out = {};
-  Object.keys(SHARED.marks).forEach(k => { if (SHARED.marks[k]) out[k] = true; });
-  Object.keys(overrides).filter(isMark).forEach(k => {
-    if (overrides[k]) out[k] = true; else delete out[k];   // false collapses to absent
+
+/* Serialise this page with the current marks baked in. Everything render()
+   writes gets emptied first, so the snapshot ships the app, not a frozen
+   rendering of it — it rebuilds itself on open like any other copy. */
+function snapshotHtml(){
+  const clone = document.documentElement.cloneNode(true);
+  ['dowrow','grid','ledger','focuslist'].forEach(id => {
+    const el = clone.querySelector('#' + id); if (el) el.innerHTML = '';
   });
-  return out;
+  ['focusdow','focusdate','statustext','seednote','t-run','t-month','t-open','savemsg']
+    .forEach(id => { const el = clone.querySelector('#' + id); if (el) el.textContent = ''; });
+  const bar = clone.querySelector('#statusbar'); if (bar) bar.className = 'statusbar';
+
+  const marks = {};
+  Object.keys(overrides).filter(isMark).forEach(k => { if (overrides[k]) marks[k] = true; });
+  clone.querySelector('#baked').textContent =
+    '\nwindow.CADENCE_SNAPSHOT = ' + JSON.stringify(
+      {published: stamp(), density, marks}, null, 2) + ';\n';
+
+  return '<!doctype html>\n' + clone.outerHTML + '\n';
 }
-function stateFile(){
-  const marks = mergedMarks();
-  const keys = Object.keys(marks).sort();
-  const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
-  return '/* Cadence Board — shared record. Regenerate from the board, do not hand-edit. */\n'
-    + 'window.CADENCE_STATE = {\n'
-    + '  published: "' + stamp + '",\n'
-    + '  marks: {\n'
-    + keys.map(k => '    "' + k + '": true').join(',\n') + (keys.length ? '\n' : '')
-    + '  }\n};\n';
+
+async function publish(){
+  const msg = document.getElementById('savemsg');
+  const html = snapshotHtml();
+  const name = 'cadence-board-' + key(TODAY) + '.html';
+  msg.textContent = '';
+
+  if (typeof window.showSaveFilePicker === 'function'){
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: name,
+        types: [{description:'Web page', accept:{'text/html':['.html']}}]
+      });
+      const w = await handle.createWritable();
+      await w.write(html); await w.close();
+      msg.textContent = 'Saved ' + handle.name + ' — the team sees it once OneDrive syncs.';
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError'){ msg.textContent = 'Cancelled.'; return; }
+      /* fall through to the download path */
+    }
+  }
+  try {
+    const url = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    msg.textContent = 'Saved to your downloads — move it into the shared folder.';
+  } catch (e) {
+    msg.textContent = 'This browser will not let the page save a file. Try Chrome or Edge.';
+  }
 }
+
 function buildStatus(){
   const bar = document.getElementById('statusbar');
-  const n = localChanges().length;
-  bar.className = 'statusbar' + (n ? ' dirty' : (SHARED.present ? ' shared' : ''));
-  const shared = SHARED.present
-    ? 'Shared record published <b>' + SHARED.published + '</b>'
-    : (SEED_SAMPLE_HISTORY
-        ? 'No shared record yet — showing sample history'
-        : 'No shared record yet — this board is empty');
-  document.getElementById('statustext').innerHTML = shared
-    + (n ? ' · <b>' + n + ' change' + (n === 1 ? '' : 's') + '</b> saved on this computer only' : '');
-  const d = document.getElementById('discard');
-  d.hidden = !n;
-  document.getElementById('publish').disabled = !n && !SHARED.present;
+  const text = document.getElementById('statustext');
+  if (READONLY){
+    bar.className = 'statusbar snap';
+    text.innerHTML = 'Snapshot of <b>' + SNAP.published + '</b> · read-only';
+    return;
+  }
+  const n = markCount();
+  bar.className = 'statusbar live';
+  text.innerHTML = 'Working copy · <b>' + n + ' mark' + (n === 1 ? '' : 's')
+    + '</b> saved on this computer'
+    + (SEED_SAMPLE_HISTORY ? ' · sample history is shown but never published' : '');
 }
 
 function render(){ buildCalendar(); buildFocus(); buildLedger(); buildTally(); buildStatus(); }
@@ -727,60 +736,30 @@ document.getElementById('next').addEventListener('click', () => { view = new Dat
 document.getElementById('jump').addEventListener('click', () => {
   view = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1); focus = new Date(TODAY); render();
 });
-const dlg = document.getElementById('pubdlg');
-document.getElementById('publish').addEventListener('click', () => {
-  document.getElementById('pubtext').value = stateFile();
-  document.getElementById('pubmsg').textContent = '';
-  dlg.showModal();
-});
-document.getElementById('pubclose').addEventListener('click', () => dlg.close());
-
-/* A sandboxed host silently swallows a download instead of erroring, so the
-   button would lie about having saved. Offer it only where it really works —
-   the local file, which is the shipping context — and leave Copy elsewhere. */
-if (location.protocol !== 'file:') document.getElementById('pubdl').hidden = true;
-document.getElementById('pubcopy').addEventListener('click', async () => {
-  const ta = document.getElementById('pubtext');
-  const msg = document.getElementById('pubmsg');
-  try { await navigator.clipboard.writeText(ta.value); msg.textContent = 'Copied — paste into state.js and save.'; }
-  catch (e) { ta.select(); msg.textContent = 'Clipboard blocked here — the text is selected, press Ctrl/Cmd+C.'; }
-});
-document.getElementById('pubdl').addEventListener('click', () => {
-  const msg = document.getElementById('pubmsg');
-  try {
-    const url = URL.createObjectURL(new Blob([stateFile()], {type:'text/javascript'}));
-    const a = document.createElement('a');
-    a.href = url; a.download = 'state.js';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    msg.textContent = 'Saved to your downloads — move it next to the dashboard.';
-  } catch (e) { msg.textContent = 'Download blocked here — use Copy instead.'; }
-});
-document.getElementById('discard').addEventListener('click', () => {
-  if (!confirm('Discard the changes saved on this computer and go back to the published record?')) return;
-  overrides = {__density: density}; save(); render();
-});
-
-document.getElementById('density').addEventListener('cl', e => {
+document.getElementById('publish').addEventListener('click', publish);
+document.getElementById('density').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
-  density = b.dataset.d; overrides.__density = density; save();
-  document.getElementById('seednote').textContent = SHARED.present
-  ? 'Reading the shared record from state.js in this folder.'
-  : (SEED_SAMPLE_HISTORY
-      ? 'Prototype. Past days are pre-filled with sample history so the patterns are visible.'
-      : 'Ticks start empty — every mark on this board is one somebody made.');
-
-document.querySelectorAll('#density button').forEach(x =>
+  density = b.dataset.d;
+  if (!READONLY){ overrides.__density = density; save(); }
+  document.querySelectorAll('#density button').forEach(x =>
     x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
   render();
 });
-document.getElementById('reset').addEventListener('click', () => { overrides = {__density: density}; save(); render(); });
+document.getElementById('reset').addEventListener('click', () => {
+  if (!confirm('Clear every mark saved on this computer?')) return;
+  overrides = {__density: density}; save(); render();
+});
 
-document.getElementById('seednote').textContent = SHARED.present
-  ? 'Reading the shared record from state.js in this folder.'
+if (READONLY){
+  document.body.classList.add('readonly');
+  document.getElementById('publish').hidden = true;
+  document.getElementById('resetline').hidden = true;
+}
+document.getElementById('seednote').textContent = READONLY
+  ? 'A published snapshot. Marks are fixed as of the date above; the working copy is where they are made.'
   : (SEED_SAMPLE_HISTORY
       ? 'Prototype. Past days are pre-filled with sample history so the patterns are visible.'
-      : 'Ticks start empty — every mark on this board is one somebody made.');
+      : 'Working copy. Every mark is saved in this browser until you publish a snapshot.');
 
 document.querySelectorAll('#density button').forEach(x =>
   x.setAttribute('aria-pressed', x.dataset.d === density ? 'true' : 'false'));
