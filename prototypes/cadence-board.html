@@ -1,0 +1,609 @@
+<title>Cadence Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<style>
+:root{
+  --paper:#F6F8F7; --surface:#FFFFFF; --surface-2:#EFF2F1; --sunk:#E7EBEA;
+  --line:#D8DEDC; --line-soft:#E9EDEC;
+  --ink:#12181A; --ink-2:#48524F; --ink-3:#7B8683;
+  --daily:#0F6F66; --daily-ink:#0F6F66; --daily-wash:#DDEBE8;
+  --weekly:#8A6612; --weekly-ink:#7A5A0F; --weekly-wash:#F1E8D3;
+  --monthly:#4A53A2; --monthly-ink:#4A53A2; --monthly-wash:#E2E4F3;
+  --miss:#B0563E;
+  --focus:#0F6F66;
+  --shadow:0 1px 2px rgba(18,24,26,.05), 0 8px 24px -16px rgba(18,24,26,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D1011; --surface:#151A1B; --surface-2:#1C2223; --sunk:#101415;
+    --line:#2A3233; --line-soft:#222A2B;
+    --ink:#E6EBEA; --ink-2:#A2ADAA; --ink-3:#6E7A77;
+    --daily:#43BCA9; --daily-ink:#5FD0BD; --daily-wash:#123330;
+    --weekly:#D2A44A; --weekly-ink:#E0B764; --weekly-wash:#33290F;
+    --monthly:#8B92E8; --monthly-ink:#A2A8F0; --monthly-wash:#1E2140;
+    --miss:#D2795E;
+    --focus:#5FD0BD;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D1011; --surface:#151A1B; --surface-2:#1C2223; --sunk:#101415;
+  --line:#2A3233; --line-soft:#222A2B;
+  --ink:#E6EBEA; --ink-2:#A2ADAA; --ink-3:#6E7A77;
+  --daily:#43BCA9; --daily-ink:#5FD0BD; --daily-wash:#123330;
+  --weekly:#D2A44A; --weekly-ink:#E0B764; --weekly-wash:#33290F;
+  --monthly:#8B92E8; --monthly-ink:#A2A8F0; --monthly-wash:#1E2140;
+  --miss:#D2795E;
+  --focus:#5FD0BD;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Public Sans","Helvetica Neue",Arial,sans-serif;
+  font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0; text-wrap:balance; font-family:"Bricolage Grotesque","Public Sans",sans-serif;}
+button{font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer}
+:focus-visible{outline:2px solid var(--focus); outline-offset:2px; border-radius:3px}
+
+.wrap{max-width:1240px; margin:0 auto; padding:28px 22px 56px}
+
+/* ---------- masthead ---------- */
+.masthead{
+  display:flex; flex-wrap:wrap; align-items:flex-end; gap:20px 28px;
+  padding-bottom:18px; margin-bottom:22px;
+  border-bottom:1px solid var(--line);
+}
+.brand h1{font-size:31px; font-weight:800; letter-spacing:-.02em; line-height:1.05}
+.brand p{margin:6px 0 0; color:var(--ink-2); font-size:14px; max-width:52ch}
+.brand .rule{
+  display:inline-block; width:34px; height:3px; margin-bottom:9px;
+  background:linear-gradient(90deg,var(--daily) 0 33%,var(--weekly) 33% 66%,var(--monthly) 66% 100%);
+}
+.navbar{margin-left:auto; display:flex; align-items:center; gap:10px}
+.navbar .month{
+  font-family:"Bricolage Grotesque",sans-serif; font-weight:700; font-size:19px;
+  letter-spacing:-.01em; min-width:9.5ch; text-align:center;
+}
+.navbtn{
+  width:32px; height:32px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); color:var(--ink-2);
+  display:grid; place-items:center; line-height:1;
+}
+.navbtn:hover{border-color:var(--ink-3); color:var(--ink)}
+.today-btn{
+  padding:6px 12px; border:1px solid var(--line); border-radius:999px;
+  background:var(--surface); font-size:12.5px; font-weight:600; color:var(--ink-2);
+}
+.today-btn:hover{border-color:var(--ink-3); color:var(--ink)}
+
+/* ---------- layout ---------- */
+.layout{display:grid; grid-template-columns:minmax(0,1fr) 306px; gap:20px; align-items:start}
+@media (max-width:960px){ .layout{grid-template-columns:minmax(0,1fr)} }
+
+.panel{
+  background:var(--surface); border:1px solid var(--line); border-radius:12px;
+  box-shadow:var(--shadow);
+}
+.panel-head{
+  display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+  padding:14px 16px; border-bottom:1px solid var(--line-soft);
+}
+.panel-head h2{font-size:14px; font-weight:700; letter-spacing:.02em}
+.panel-head .note{font-size:12px; color:var(--ink-3); margin-left:auto}
+.panel-head .seg{margin-left:14px}
+
+/* ---------- calendar ---------- */
+.dow-row{
+  display:grid; grid-template-columns:repeat(7,minmax(0,1fr));
+  padding:8px 10px 4px; gap:6px;
+}
+.dow{
+  font-family:"JetBrains Mono",monospace; font-size:10.5px; font-weight:500;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); text-align:center;
+}
+.grid{
+  display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px;
+  padding:0 10px 12px;
+}
+.cell{
+  position:relative; text-align:left; min-height:88px; padding:7px 7px 8px;
+  border:1px solid var(--line-soft); border-radius:9px; background:var(--surface);
+  display:flex; flex-direction:column; gap:6px;
+  transition:border-color .12s ease, background .12s ease;
+}
+.cell:hover{border-color:var(--ink-3)}
+.cell.pad{background:var(--sunk); border-color:transparent}
+.cell.pad .dnum{color:var(--ink-3); opacity:.55}
+.cell.sel{border-color:var(--focus); box-shadow:inset 0 0 0 1px var(--focus)}
+.cell.today .dnum{
+  background:var(--ink); color:var(--surface); border-radius:6px;
+  padding:1px 5px; margin:-1px -3px;
+}
+.cell-top{display:flex; align-items:center; justify-content:space-between; gap:6px}
+.dnum{font-family:"JetBrains Mono",monospace; font-size:12px; font-weight:500; font-variant-numeric:tabular-nums}
+
+/* the daily rhythm meter — dailies appear as density, never as repeated text */
+.meter{display:flex; gap:2px; align-items:flex-end; height:12px}
+.meter i{width:3px; height:100%; border-radius:1px; background:var(--line); display:block}
+.meter i.on{background:var(--daily)}
+.meter i.off{background:transparent; box-shadow:inset 0 0 0 1px var(--line)}
+.meter.future i{background:transparent; box-shadow:inset 0 0 0 1px var(--line-soft)}
+
+.chips{display:flex; flex-direction:column; gap:3px; margin-top:auto}
+.chips.min{flex-direction:row; flex-wrap:wrap; gap:4px; align-items:center; min-height:10px}
+.dot{width:9px; height:9px; border-radius:50%; flex:none; box-shadow:inset 0 0 0 1.5px currentColor}
+.dot.w{color:var(--weekly)} .dot.m{color:var(--monthly)}
+.dot.done{background:currentColor}
+
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; margin-left:auto}
+.seg button{
+  padding:4px 11px; font-size:11.5px; font-weight:600; color:var(--ink-3);
+  font-family:"JetBrains Mono",monospace; letter-spacing:.02em;
+}
+.seg button[aria-pressed="true"]{background:var(--surface-2); color:var(--ink)}
+.seg button+button{border-left:1px solid var(--line)}
+.chip{
+  display:flex; align-items:center; gap:5px; width:100%;
+  font-size:11px; line-height:1.25; font-weight:600; text-align:left;
+  padding:3px 6px; border-radius:5px; border:1px solid transparent;
+}
+.chip .tick{font-family:"JetBrains Mono",monospace; font-size:9px; opacity:.75}
+.chip .txt{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.chip.w{background:var(--weekly-wash); color:var(--weekly-ink)}
+.chip.m{background:var(--monthly-wash); color:var(--monthly-ink)}
+.chip.done .txt{text-decoration:line-through; opacity:.65}
+.chip:hover{border-color:currentColor}
+
+/* ---------- focus rail ---------- */
+.focus-date{padding:14px 16px 4px}
+.focus-date .dow-name{
+  font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+.focus-date h2{font-size:22px; font-weight:700; letter-spacing:-.015em; margin-top:2px}
+.tasklist{list-style:none; margin:0; padding:8px 10px 14px; display:flex; flex-direction:column; gap:2px}
+.grouplabel{
+  font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3);
+  padding:12px 6px 4px; display:flex; align-items:center; gap:7px;
+}
+.grouplabel::after{content:""; flex:1; height:1px; background:var(--line-soft)}
+.swatch{width:7px; height:7px; border-radius:2px; flex:none}
+.sw-d{background:var(--daily)} .sw-w{background:var(--weekly)} .sw-m{background:var(--monthly)}
+.task{
+  display:flex; align-items:center; gap:9px; width:100%;
+  padding:7px 6px; border-radius:7px; text-align:left; font-size:13.5px;
+}
+.task:hover{background:var(--surface-2)}
+.box{
+  width:16px; height:16px; flex:none; border-radius:4px;
+  border:1.5px solid var(--line); display:grid; place-items:center;
+  font-size:10px; color:var(--surface); font-family:"JetBrains Mono",monospace;
+}
+.task[data-kind="daily"] .box.on{background:var(--daily); border-color:var(--daily)}
+.task[data-kind="weekly"] .box.on{background:var(--weekly); border-color:var(--weekly)}
+.task[data-kind="monthly"] .box.on{background:var(--monthly); border-color:var(--monthly)}
+.box.on{color:var(--surface)}
+:root[data-theme="dark"] .box.on, :root:not([data-theme="light"]) .box.on{color:#0D1011}
+.task .name{flex:1; min-width:0}
+.task.on .name{color:var(--ink-3); text-decoration:line-through}
+.task .hint{font-family:"JetBrains Mono",monospace; font-size:10.5px; color:var(--ink-3)}
+.empty{padding:4px 8px 2px; font-size:12.5px; color:var(--ink-3); font-style:italic}
+
+.tally{
+  display:flex; gap:1px; padding:12px 16px 16px; margin-top:4px;
+  border-top:1px solid var(--line-soft);
+}
+.tally div{flex:1}
+.tally .n{font-family:"JetBrains Mono",monospace; font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.tally .k{font-size:10.5px; color:var(--ink-3); letter-spacing:.04em; text-transform:uppercase; font-family:"JetBrains Mono",monospace}
+
+/* ---------- ledger ---------- */
+.ledger-wrap{margin-top:20px}
+.scroller{overflow-x:auto; padding:4px 0 12px}
+.ledger{min-width:820px; padding:0 14px}
+.lrow{display:grid; align-items:center; column-gap:0}
+.lname{
+  padding:0 12px 0 4px; font-size:13px; display:flex; align-items:center; gap:8px;
+  overflow:hidden; white-space:nowrap;
+}
+.lname .txt{overflow:hidden; text-overflow:ellipsis}
+.lname .streak{
+  margin-left:auto; font-family:"JetBrains Mono",monospace; font-size:10px;
+  color:var(--ink-3); flex:none; letter-spacing:.02em;
+}
+.lhead .lnum{
+  font-family:"JetBrains Mono",monospace; font-size:9.5px; color:var(--ink-3);
+  text-align:center; font-variant-numeric:tabular-nums; padding-bottom:3px;
+}
+.lhead .lnum.wknd{color:var(--ink-3); opacity:.5}
+.lhead .lnum.today{color:var(--ink); font-weight:700}
+.cellwrap{display:grid; place-items:center; height:22px; position:relative}
+.cellwrap.wknd::after{content:""; position:absolute; inset:-3px 0; background:var(--line-soft); opacity:.3; z-index:-1}
+.lrow{position:relative; z-index:0}
+.cellwrap.weekstart::before{
+  content:""; position:absolute; left:0; top:-3px; bottom:-3px; width:1px; background:var(--line-soft);
+}
+.mark{
+  width:15px; height:15px; border-radius:4px; display:grid; place-items:center;
+  font-family:"JetBrains Mono",monospace; font-size:9px; line-height:1;
+}
+.mark.na{width:4px; height:4px; border-radius:50%; background:var(--line-soft)}
+.mark.future{box-shadow:inset 0 0 0 1px var(--line-soft)}
+.mark.miss{box-shadow:inset 0 0 0 1px var(--line); background:repeating-linear-gradient(-45deg,transparent 0 2px,var(--line) 2px 3px)}
+.mark.done.d{background:var(--daily)} .mark.done.w{background:var(--weekly)} .mark.done.m{background:var(--monthly)}
+.mark.done{color:var(--surface)}
+:root[data-theme="dark"] .mark.done, :root:not([data-theme="light"]) .mark.done{color:#0D1011}
+.cellwrap.todaycol::after{
+  content:""; position:absolute; inset:-3px -1px; border-left:1px solid var(--focus); border-right:1px solid var(--focus);
+  pointer-events:none;
+}
+button.cellbtn{width:100%; height:100%; display:grid; place-items:center; border-radius:5px}
+button.cellbtn:hover .mark{transform:scale(1.18)}
+.mark{transition:transform .1s ease}
+@media (prefers-reduced-motion:reduce){ .mark{transition:none} }
+
+.lgroup{
+  display:flex; align-items:center; gap:8px; padding:14px 4px 6px;
+  font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+.lgroup .cap{color:var(--ink-2); font-weight:500}
+.lgroup::after{content:""; flex:1; height:1px; background:var(--line-soft)}
+.lgroup em{font-style:normal; color:var(--ink-3); letter-spacing:.02em; text-transform:none; font-family:"Public Sans",sans-serif; font-size:11.5px}
+
+.legend{
+  display:flex; flex-wrap:wrap; gap:6px 16px; padding:0 18px 16px;
+  font-size:11.5px; color:var(--ink-3); align-items:center;
+}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.legend .k{width:12px; height:12px; border-radius:3px; flex:none}
+.legend .k.miss{box-shadow:inset 0 0 0 1px var(--line); background:repeating-linear-gradient(-45deg,transparent 0 2px,var(--line) 2px 3px)}
+.legend .k.future{box-shadow:inset 0 0 0 1px var(--line-soft)}
+
+footer{
+  margin-top:26px; padding-top:16px; border-top:1px solid var(--line);
+  font-size:12.5px; color:var(--ink-3); display:flex; flex-wrap:wrap; gap:8px 18px;
+}
+footer .reset{text-decoration:underline; text-underline-offset:2px}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">
+      <span class="rule"></span>
+      <h1>Cadence Board</h1>
+      <p>Every recurring task is written down exactly once. The calendar shows only what is <em>dated</em>; the daily habits show up as rhythm, not as repeated text.</p>
+    </div>
+    <div class="navbar">
+      <button class="navbtn" id="prev" aria-label="Previous month">&#8249;</button>
+      <div class="month" id="monthlabel">—</div>
+      <button class="navbtn" id="next" aria-label="Next month">&#8250;</button>
+      <button class="today-btn" id="jump">Today</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Month</h2>
+        <span class="note">bars = daily habits kept &nbsp;·&nbsp; pills = dated tasks</span>
+        <span class="seg" id="density" role="group" aria-label="Label density">
+          <button data-d="full" aria-pressed="true">names</button><button data-d="min" aria-pressed="false">dots</button>
+        </span>
+      </div>
+      <div class="dow-row" id="dowrow"></div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <aside class="panel" id="focuspanel">
+      <div class="focus-date">
+        <div class="dow-name" id="focusdow">—</div>
+        <h2 id="focusdate">—</h2>
+      </div>
+      <div id="focuslist"></div>
+      <div class="tally">
+        <div><div class="n" id="t-run">0</div><div class="k">best run</div></div>
+        <div><div class="n" id="t-month">0%</div><div class="k">month</div></div>
+        <div><div class="n" id="t-open">0</div><div class="k">open</div></div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="panel ledger-wrap">
+    <div class="panel-head">
+      <h2>Ledger</h2>
+      <span class="note">one row per task &nbsp;·&nbsp; one column per day &nbsp;·&nbsp; click any square</span>
+    </div>
+    <div class="scroller"><div class="ledger" id="ledger"></div></div>
+    <div class="legend">
+      <span><i class="k" style="background:var(--daily)"></i> daily kept</span>
+      <span><i class="k" style="background:var(--weekly)"></i> weekly kept</span>
+      <span><i class="k" style="background:var(--monthly)"></i> monthly kept</span>
+      <span><i class="k miss"></i> missed</span>
+      <span><i class="k future"></i> ahead</span>
+    </div>
+  </section>
+
+  <footer>
+    <span>Prototype. Past days are pre-filled with sample history so the patterns are visible.</span>
+    <span>Ticks are saved in this browser only. <button class="reset" id="reset">Clear my ticks</button></span>
+  </footer>
+</div>
+
+<script>
+const DAILY = [
+  {id:'inbox',   name:'Inbox to zero',       hint:'08:30',  rel:.88},
+  {id:'standup', name:'Stand-up + notes',    hint:'09:15',  rel:.94},
+  {id:'prs',     name:'Clear the PR queue',  hint:'midday', rel:.80},
+  {id:'move',    name:'Move 30 minutes',     hint:'18:00',  rel:.60},
+  {id:'log',     name:'Log the day',         hint:'21:00',  rel:.75}
+];
+const WEEKLY = [
+  {id:'plan',   name:'Plan the week',          short:'Plan week',  dow:1, rel:.90},
+  {id:'backup', name:'Verify backups',         short:'Backups',    dow:3, rel:.85},
+  {id:'review', name:'Weekly review',          short:'Review',     dow:5, rel:.78},
+  {id:'shop',   name:'Meal plan + groceries',  short:'Groceries',  dow:0, rel:.92}
+];
+const MONTHLY = [
+  {id:'bills',   name:'Rent + bills',            short:'Rent + bills', dom:1,  rel:.97},
+  {id:'recon',   name:'Reconcile accounts',      short:'Reconcile',    dom:8,  rel:.82},
+  {id:'keys',    name:'Rotate keys + passwords', short:'Rotate keys',  dom:15, rel:.65},
+  {id:'invoice', name:'Send invoices',           short:'Invoices',     dom:25, rel:.95},
+  {id:'retro',   name:'Monthly retro',           short:'Retro',        dom:28, rel:.55}
+];
+const ALL = [
+  {kind:'daily',   letter:'d', tasks:DAILY,   cap:'Daily',   blurb:'named once, tracked every column'},
+  {kind:'weekly',  letter:'w', tasks:WEEKLY,  cap:'Weekly',  blurb:'one square per week, on its own weekday'},
+  {kind:'monthly', letter:'m', tasks:MONTHLY, cap:'Monthly', blurb:'one square per month, on its own date'}
+];
+const BY_ID = {}; ALL.forEach(g => g.tasks.forEach(t => BY_ID[t.id] = {task:t, kind:g.kind, letter:g.letter}));
+
+const KEY = 'cadence-board-v1';
+let overrides = {};
+try { overrides = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { overrides = {}; }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(overrides)); } catch (e) {} }
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOWS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const now = new Date();
+const TODAY = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+let view  = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+let density = overrides.__density === 'min' ? 'min' : 'full';
+let focus = new Date(TODAY);
+
+const key = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const mondayIndex = d => (d.getDay() + 6) % 7;
+const addDays = (d,n) => new Date(d.getFullYear(), d.getMonth(), d.getDate()+n);
+const sameDay = (a,b) => key(a) === key(b);
+
+function hash(s){
+  let x = 2166136261;
+  for (let i = 0; i < s.length; i++){ x ^= s.charCodeAt(i); x = Math.imul(x, 16777619); }
+  return ((x >>> 0) % 100000) / 100000;
+}
+function dueOn(id, d){
+  const e = BY_ID[id];
+  if (e.kind === 'daily') return true;
+  if (e.kind === 'weekly') return d.getDay() === e.task.dow;
+  return d.getDate() === e.task.dom;
+}
+function isDone(id, d){
+  if (!dueOn(id, d)) return false;
+  const k = key(d) + '|' + id;
+  if (k in overrides) return overrides[k];
+  if (d >= TODAY) return false;                 // no invented history for today or ahead
+  return hash(k) < BY_ID[id].task.rel;          // seeded sample history
+}
+function toggle(id, d){
+  if (!dueOn(id, d)) return;
+  overrides[key(d) + '|' + id] = !isDone(id, d);
+  save(); render();
+}
+
+/* ---------- month grid ---------- */
+function buildCalendar(){
+  const dowrow = document.getElementById('dowrow');
+  dowrow.innerHTML = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+    .map(d => '<div class="dow">' + d + '</div>').join('');
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const first = new Date(view.getFullYear(), view.getMonth(), 1);
+  const start = addDays(first, -mondayIndex(first));
+
+  for (let i = 0; i < 42; i++){
+    const d = addDays(start, i);
+    const inMonth = d.getMonth() === view.getMonth();
+    const cell = document.createElement('button');
+    cell.className = 'cell' + (inMonth ? '' : ' pad')
+      + (sameDay(d, TODAY) ? ' today' : '')
+      + (sameDay(d, focus) ? ' sel' : '');
+    cell.setAttribute('aria-label', DOWS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()]);
+
+    const kept = DAILY.filter(t => isDone(t.id, d)).length;
+    const ahead = d > TODAY;
+    const meter = DAILY.map((t, n) =>
+      '<i class="' + (ahead ? '' : (n < kept ? 'on' : 'off')) + '"></i>').join('');
+
+    let chips = '';
+    if (inMonth){
+      const dated = WEEKLY.filter(t => t.dow === d.getDay()).map(t => [t,'w'])
+        .concat(MONTHLY.filter(t => t.dom === d.getDate()).map(t => [t,'m']));
+      dated.forEach(pair => {
+        const t = pair[0], c = pair[1], on = isDone(t.id, d);
+        chips += density === 'min'
+          ? '<span class="dot ' + c + (on ? ' done' : '') + '" title="' + t.name + (on ? ' · kept' : '') + '"></span>'
+          : '<span class="chip ' + c + (on ? ' done' : '') + '"><span class="tick">' + (on ? '✓' : '○')
+            + '</span><span class="txt">' + t.short + '</span></span>';
+      });
+    }
+
+    cell.innerHTML =
+      '<div class="cell-top"><span class="dnum">' + d.getDate() + '</span>'
+      + '<span class="meter' + (ahead ? ' future' : '') + '" title="' + kept + ' of ' + DAILY.length + ' daily habits">' + meter + '</span></div>'
+      + '<div class="chips' + (density === 'min' ? ' min' : '') + '">' + chips + '</div>';
+
+    cell.addEventListener('click', () => { focus = d; if (!inMonth) view = new Date(d.getFullYear(), d.getMonth(), 1); render(); });
+    grid.appendChild(cell);
+  }
+  document.getElementById('monthlabel').textContent = MONTHS[view.getMonth()] + ' ' + view.getFullYear();
+}
+
+/* ---------- focus rail ---------- */
+function buildFocus(){
+  document.getElementById('focusdow').textContent =
+    sameDay(focus, TODAY) ? 'Today · ' + DOWS[focus.getDay()] : DOWS[focus.getDay()];
+  document.getElementById('focusdate').textContent = focus.getDate() + ' ' + MONTHS[focus.getMonth()];
+
+  const host = document.getElementById('focuslist');
+  host.innerHTML = '';
+  ALL.forEach(g => {
+    const due = g.tasks.filter(t => dueOn(t.id, focus));
+    const label = document.createElement('div');
+    label.className = 'grouplabel';
+    label.innerHTML = '<i class="swatch sw-' + g.letter + '"></i>' + g.cap;
+    host.appendChild(label);
+    if (!due.length){
+      const e = document.createElement('div');
+      e.className = 'empty';
+      e.textContent = g.kind === 'weekly' ? 'nothing weekly lands on a ' + DOWS[focus.getDay()] : 'nothing monthly lands on the ' + focus.getDate();
+      host.appendChild(e);
+      return;
+    }
+    const ul = document.createElement('ul');
+    ul.className = 'tasklist';
+    due.forEach(t => {
+      const on = isDone(t.id, focus);
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.className = 'task' + (on ? ' on' : '');
+      b.dataset.kind = g.kind;
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.innerHTML = '<span class="box' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span>'
+        + '<span class="name">' + t.name + '</span>'
+        + '<span class="hint">' + (t.hint || '') + '</span>';
+      b.addEventListener('click', () => toggle(t.id, focus));
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+    host.appendChild(ul);
+  });
+}
+
+/* ---------- ledger ---------- */
+function daysInView(){
+  const n = new Date(view.getFullYear(), view.getMonth()+1, 0).getDate();
+  const out = [];
+  for (let i = 1; i <= n; i++) out.push(new Date(view.getFullYear(), view.getMonth(), i));
+  return out;
+}
+function streak(id){
+  // consecutive kept occurrences counting back from the most recent due day at or before today
+  let d = new Date(TODAY), n = 0, guard = 0;
+  while (guard++ < 400){
+    if (dueOn(id, d)){
+      if (isDone(id, d)) n++;
+      else if (!sameDay(d, TODAY)) break;       // today still pending doesn't break the run
+    }
+    d = addDays(d, -1);
+  }
+  return n;
+}
+function buildLedger(){
+  const days = daysInView();
+  const cols = 'grid-template-columns:190px repeat(' + days.length + ',minmax(16px,1fr));';
+  const host = document.getElementById('ledger');
+  host.innerHTML = '';
+
+  const head = document.createElement('div');
+  head.className = 'lrow lhead';
+  head.style.cssText = cols;
+  head.innerHTML = '<div class="lname"></div>' + days.map(d =>
+    '<div class="lnum' + (d.getDay() === 0 || d.getDay() === 6 ? ' wknd' : '')
+      + (sameDay(d, TODAY) ? ' today' : '') + '">' + d.getDate() + '</div>').join('');
+  host.appendChild(head);
+
+  ALL.forEach(g => {
+    const gl = document.createElement('div');
+    gl.className = 'lgroup';
+    gl.innerHTML = '<span class="cap">' + g.cap + '</span><em>' + g.blurb + '</em>';
+    host.appendChild(gl);
+
+    g.tasks.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'lrow';
+      row.style.cssText = cols;
+      const label = document.createElement('div');
+      label.className = 'lname';
+      const s = streak(t.id);
+      label.innerHTML = '<i class="swatch sw-' + g.letter + '"></i><span class="txt">' + t.name + '</span>'
+        + '<span class="streak">' + (s ? s + '×' : '—') + '</span>';
+      row.appendChild(label);
+
+      days.forEach(d => {
+        const wrap = document.createElement('div');
+        wrap.className = 'cellwrap' + (d.getDay() === 1 ? ' weekstart' : '')
+          + (d.getDay() === 0 || d.getDay() === 6 ? ' wknd' : '')
+          + (sameDay(d, TODAY) ? ' todaycol' : '');
+        if (!dueOn(t.id, d)){
+          wrap.innerHTML = '<span class="mark na"></span>';
+        } else {
+          const on = isDone(t.id, d);
+          const state = on ? 'done ' + g.letter : (d > TODAY ? 'future' : (sameDay(d, TODAY) ? 'future' : 'miss'));
+          const b = document.createElement('button');
+          b.className = 'cellbtn';
+          b.title = t.name + ' · ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + (on ? ' · kept' : (d >= TODAY ? '' : ' · missed'));
+          b.setAttribute('aria-label', b.title);
+          b.innerHTML = '<span class="mark ' + state + '">' + (on ? '✓' : '') + '</span>';
+          b.addEventListener('click', () => { focus = d; toggle(t.id, d); });
+          wrap.appendChild(b);
+        }
+        row.appendChild(wrap);
+      });
+      host.appendChild(row);
+    });
+  });
+}
+
+/* ---------- tally ---------- */
+function buildTally(){
+  const best = DAILY.reduce((m,t) => Math.max(m, streak(t.id)), 0);
+  let due = 0, kept = 0;
+  daysInView().forEach(dd => {
+    if (dd > TODAY) return;
+    Object.keys(BY_ID).forEach(id => { if (dueOn(id, dd)){ due++; if (isDone(id, dd)) kept++; } });
+  });
+  const open = Object.keys(BY_ID).filter(id => dueOn(id, focus) && !isDone(id, focus)).length;
+  document.getElementById('t-run').textContent = best;
+  document.getElementById('t-month').textContent = due ? Math.round(kept / due * 100) + '%' : '—';
+  document.getElementById('t-open').textContent = open;
+}
+
+function render(){ buildCalendar(); buildFocus(); buildLedger(); buildTally(); }
+
+document.getElementById('prev').addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth()-1, 1); render(); });
+document.getElementById('next').addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth()+1, 1); render(); });
+document.getElementById('jump').addEventListener('click', () => {
+  view = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1); focus = new Date(TODAY); render();
+});
+document.getElementById('density').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  density = b.dataset.d; overrides.__density = density; save();
+  document.querySelectorAll('#density button').forEach(x =>
+    x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+  render();
+});
+document.getElementById('reset').addEventListener('click', () => { overrides = {__density: density}; save(); render(); });
+
+document.querySelectorAll('#density button').forEach(x =>
+  x.setAttribute('aria-pressed', x.dataset.d === density ? 'true' : 'false'));
+
+render();
+</script>
