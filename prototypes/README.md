@@ -22,6 +22,28 @@ often than that.**
 - A `names` / `dots` toggle collapses the dated pills to coloured dots when even
   a weekly label feels like too much ink.
 
-Sample history is seeded for past days so the patterns are visible; ticks are
-stored in `localStorage` for the current browser only. Task definitions live in
-the `DAILY` / `WEEKLY` / `MONTHLY` arrays at the top of the `<script>` block.
+Task definitions live in the `DAILY` / `WEEKLY` / `MONTHLY` arrays at the top of
+the `<script>` block.
+
+### Before you share the file
+
+Set `SEED_SAMPLE_HISTORY = false` at the top of the script. While it is `true`,
+past days are pre-filled with fabricated history so the patterns are visible in
+a demo — anyone you send the file to would open it and see a record that looks
+real but isn't, anchored to *their* today rather than yours.
+
+### What travels with the file, and what doesn't
+
+Ticks are written to `localStorage`, not to the file — a page cannot write to
+its own file on disk. So the `.html` you attach to an email is byte-identical
+before and after you use it, and it carries none of your marks. Each recipient
+gets a private board of their own; nothing syncs between them, and nobody sees
+anyone else's ticks. A shared board would need a server.
+
+Storage is per browser and per profile: a private window starts empty, and
+clearing site data wipes it. Reads and writes are wrapped in `try`/`catch`, so
+a browser that blocks storage on `file://` degrades to in-memory — ticks work
+for the session and reset on reload — rather than breaking the page.
+
+The one external request is the Google Fonts stylesheet; with no network the
+page falls back to system fonts and is otherwise unaffected.

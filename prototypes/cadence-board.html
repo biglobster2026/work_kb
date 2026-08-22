@@ -332,12 +332,17 @@ footer .reset{text-decoration:underline; text-underline-offset:2px}
   </section>
 
   <footer>
-    <span>Prototype. Past days are pre-filled with sample history so the patterns are visible.</span>
+    <span id="seednote"></span>
     <span>Ticks are saved in this browser only. <button class="reset" id="reset">Clear my ticks</button></span>
   </footer>
 </div>
 
 <script>
+/* Sample history for past days makes the patterns visible in a demo.
+   Set this to false before sharing the file, so colleagues open a clean board
+   instead of a record that looks real but isn't. */
+const SEED_SAMPLE_HISTORY = true;
+
 const DAILY = [
   {id:'inbox',   name:'Inbox to zero',       hint:'08:30',  rel:.88},
   {id:'standup', name:'Stand-up + notes',    hint:'09:15',  rel:.94},
@@ -399,6 +404,7 @@ function isDone(id, d){
   const k = key(d) + '|' + id;
   if (k in overrides) return overrides[k];
   if (d >= TODAY) return false;                 // no invented history for today or ahead
+  if (!SEED_SAMPLE_HISTORY) return false;       // clean board — only real ticks count
   return hash(k) < BY_ID[id].task.rel;          // seeded sample history
 }
 function toggle(id, d){
@@ -596,11 +602,19 @@ document.getElementById('jump').addEventListener('click', () => {
 document.getElementById('density').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   density = b.dataset.d; overrides.__density = density; save();
-  document.querySelectorAll('#density button').forEach(x =>
+  document.getElementById('seednote').textContent = SEED_SAMPLE_HISTORY
+  ? 'Prototype. Past days are pre-filled with sample history so the patterns are visible.'
+  : 'Ticks start empty — every mark on this board is one somebody made.';
+
+document.querySelectorAll('#density button').forEach(x =>
     x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
   render();
 });
 document.getElementById('reset').addEventListener('click', () => { overrides = {__density: density}; save(); render(); });
+
+document.getElementById('seednote').textContent = SEED_SAMPLE_HISTORY
+  ? 'Prototype. Past days are pre-filled with sample history so the patterns are visible.'
+  : 'Ticks start empty — every mark on this board is one somebody made.';
 
 document.querySelectorAll('#density button').forEach(x =>
   x.setAttribute('aria-pressed', x.dataset.d === density ? 'true' : 'false'));
