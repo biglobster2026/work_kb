@@ -734,6 +734,11 @@ document.getElementById('publish').addEventListener('click', () => {
   dlg.showModal();
 });
 document.getElementById('pubclose').addEventListener('click', () => dlg.close());
+
+/* A sandboxed host silently swallows a download instead of erroring, so the
+   button would lie about having saved. Offer it only where it really works —
+   the local file, which is the shipping context — and leave Copy elsewhere. */
+if (location.protocol !== 'file:') document.getElementById('pubdl').hidden = true;
 document.getElementById('pubcopy').addEventListener('click', async () => {
   const ta = document.getElementById('pubtext');
   const msg = document.getElementById('pubmsg');
