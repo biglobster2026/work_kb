@@ -25,20 +25,50 @@ often than that.**
 Task definitions live in the `DAILY` / `WEEKLY` / `MONTHLY` arrays at the top of
 the `<script>` block.
 
-### Before you share the file
+### Sharing it from OneDrive / SharePoint — one writer, many readers
 
-Set `SEED_SAMPLE_HISTORY = false` at the top of the script. While it is `true`,
-past days are pre-filled with fabricated history so the patterns are visible in
-a demo — anyone you send the file to would open it and see a record that looks
-real but isn't, anchored to *their* today rather than yours.
+Put `cadence-board.html` and `state.js` side by side in the shared folder. The
+dashboard loads `state.js` on open, so everyone sees the same record without a
+server.
+
+- **Readers** open the file and see whatever was last published. They can tick
+  things, but those marks stay in their own browser and change nothing for
+  anyone else.
+- **The owner** ticks as normal, then presses **Publish record…**, copies the
+  generated text over `state.js`, and lets OneDrive sync. The status bar counts
+  unpublished changes so it is obvious when the shared copy is behind.
+
+The sample history is never published — the first `state.js` starts from real
+marks only. Sample data also switches itself off automatically as soon as a
+`state.js` is present, so nobody sees invented history beside the real record.
+
+This is deliberately single-writer. Two people publishing independently would
+each overwrite a whole-document snapshot and silently drop the other's marks; a
+file on a sync service cannot merge concurrent edits. If everyone needs to tick
+a genuinely shared board, use a SharePoint list, an Excel workbook (co-authoring
+handles the merge), or a hosted page with a backend.
+
+Note that a `.json` or `.csv` sidecar will *not* work in place of `state.js`:
+`fetch()` and `XMLHttpRequest` are blocked on `file://` origins, while a
+`<script src>` is not. That is why the record is a `.js` file assigning
+`window.CADENCE_STATE`.
+
+Also check how your tenant serves `.html` from SharePoint — the default strict
+browser file handling downloads HTML rather than rendering it. Opening through
+the synced OneDrive folder avoids this.
+
+### Running it without a shared record
+
+Set `SHOW_SAMPLE_WHEN_EMPTY = false` at the top of the script for a board that
+starts completely empty. While it is `true` and no `state.js` exists, past days
+are pre-filled with fabricated history so the patterns are visible in a demo.
 
 ### What travels with the file, and what doesn't
 
 Ticks are written to `localStorage`, not to the file — a page cannot write to
-its own file on disk. So the `.html` you attach to an email is byte-identical
-before and after you use it, and it carries none of your marks. Each recipient
-gets a private board of their own; nothing syncs between them, and nobody sees
-anyone else's ticks. A shared board would need a server.
+its own file on disk, which is why publishing is a copy-paste step rather than
+a save. So the `.html` itself is byte-identical before and after you use it and
+carries none of your marks; everything shared travels in `state.js`.
 
 Storage is per browser and per profile: a private window starts empty, and
 clearing site data wipes it. Reads and writes are wrapped in `try`/`catch`, so
