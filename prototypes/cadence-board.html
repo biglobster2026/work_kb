@@ -5,39 +5,39 @@
 
 <style>
 :root{
-  --paper:#F6F8F7; --surface:#FFFFFF; --surface-2:#EFF2F1; --sunk:#E7EBEA;
-  --line:#D8DEDC; --line-soft:#E9EDEC;
-  --ink:#12181A; --ink-2:#48524F; --ink-3:#7B8683;
-  --daily:#0F6F66; --daily-ink:#0F6F66; --daily-wash:#DDEBE8;
-  --weekly:#8A6612; --weekly-ink:#7A5A0F; --weekly-wash:#F1E8D3;
-  --monthly:#4A53A2; --monthly-ink:#4A53A2; --monthly-wash:#E2E4F3;
-  --miss:#B0563E;
-  --focus:#0F6F66;
-  --shadow:0 1px 2px rgba(18,24,26,.05), 0 8px 24px -16px rgba(18,24,26,.28);
+  --paper:#F8F6FC; --surface:#FFFFFF; --surface-2:#F1EDF9; --sunk:#EAE5F4;
+  --line:#DFD8EE; --line-soft:#EDE8F7;
+  --ink:#16111F; --ink-2:#4C4360; --ink-3:#7E7594;
+  --daily:#7A21F5; --daily-ink:#5B10C4; --daily-wash:#EADCFE;
+  --weekly:#2A5BE0; --weekly-ink:#1D4AC4; --weekly-wash:#DCE5FD;
+  --monthly:#B41C9C; --monthly-ink:#93157F; --monthly-wash:#F8D9F1;
+  --miss:#9B4F86;
+  --focus:#7A21F5; --on-accent:#FFFFFF;
+  --shadow:0 1px 2px rgba(22,17,31,.05), 0 8px 24px -16px rgba(58,26,120,.35);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --paper:#0D1011; --surface:#151A1B; --surface-2:#1C2223; --sunk:#101415;
-    --line:#2A3233; --line-soft:#222A2B;
-    --ink:#E6EBEA; --ink-2:#A2ADAA; --ink-3:#6E7A77;
-    --daily:#43BCA9; --daily-ink:#5FD0BD; --daily-wash:#123330;
-    --weekly:#D2A44A; --weekly-ink:#E0B764; --weekly-wash:#33290F;
-    --monthly:#8B92E8; --monthly-ink:#A2A8F0; --monthly-wash:#1E2140;
-    --miss:#D2795E;
-    --focus:#5FD0BD;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.9);
+    --paper:#0E0B15; --surface:#17121F; --surface-2:#1F1929; --sunk:#120E1A;
+    --line:#302842; --line-soft:#271F36;
+    --ink:#EBE6F5; --ink-2:#A79EBD; --ink-3:#78708F;
+    --daily:#A97BFF; --daily-ink:#BC97FF; --daily-wash:#2A1A4D;
+    --weekly:#6E9EFF; --weekly-ink:#8DB2FF; --weekly-wash:#152449;
+    --monthly:#E274D2; --monthly-ink:#EE94E0; --monthly-wash:#3D1338;
+    --miss:#C784B4;
+    --focus:#A97BFF; --on-accent:#120E1B; --on-accent:#120E1B;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 28px -18px rgba(0,0,0,.9);
   }
 }
 :root[data-theme="dark"]{
-  --paper:#0D1011; --surface:#151A1B; --surface-2:#1C2223; --sunk:#101415;
-  --line:#2A3233; --line-soft:#222A2B;
-  --ink:#E6EBEA; --ink-2:#A2ADAA; --ink-3:#6E7A77;
-  --daily:#43BCA9; --daily-ink:#5FD0BD; --daily-wash:#123330;
-  --weekly:#D2A44A; --weekly-ink:#E0B764; --weekly-wash:#33290F;
-  --monthly:#8B92E8; --monthly-ink:#A2A8F0; --monthly-wash:#1E2140;
-  --miss:#D2795E;
-  --focus:#5FD0BD;
-  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.9);
+  --paper:#0E0B15; --surface:#17121F; --surface-2:#1F1929; --sunk:#120E1A;
+  --line:#302842; --line-soft:#271F36;
+  --ink:#EBE6F5; --ink-2:#A79EBD; --ink-3:#78708F;
+  --daily:#A97BFF; --daily-ink:#BC97FF; --daily-wash:#2A1A4D;
+  --weekly:#6E9EFF; --weekly-ink:#8DB2FF; --weekly-wash:#152449;
+  --monthly:#E274D2; --monthly-ink:#EE94E0; --monthly-wash:#3D1338;
+  --miss:#C784B4;
+  --focus:#A97BFF; --on-accent:#120E1B;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 28px -18px rgba(0,0,0,.9);
 }
 
 *{box-sizing:border-box}
@@ -122,7 +122,7 @@ button{font:inherit; color:inherit; background:none; border:0; padding:0; cursor
 .cell.pad .dnum{color:var(--ink-3); opacity:.55}
 .cell.sel{border-color:var(--focus); box-shadow:inset 0 0 0 1px var(--focus)}
 .cell.today .dnum{
-  background:var(--ink); color:var(--surface); border-radius:6px;
+  background:var(--daily); color:var(--on-accent); border-radius:6px;
   padding:1px 5px; margin:-1px -3px;
 }
 .cell-top{display:flex; align-items:center; justify-content:space-between; gap:6px}
@@ -190,7 +190,7 @@ button{font:inherit; color:inherit; background:none; border:0; padding:0; cursor
 .task[data-kind="weekly"] .box.on{background:var(--weekly); border-color:var(--weekly)}
 .task[data-kind="monthly"] .box.on{background:var(--monthly); border-color:var(--monthly)}
 .box.on{color:var(--surface)}
-:root[data-theme="dark"] .box.on, :root:not([data-theme="light"]) .box.on{color:#0D1011}
+:root[data-theme="dark"] .box.on, :root:not([data-theme="light"]) .box.on{color:#120E1B}
 .task .name{flex:1; min-width:0}
 .task.on .name{color:var(--ink-3); text-decoration:line-through}
 .task .hint{font-family:"JetBrains Mono",monospace; font-size:10.5px; color:var(--ink-3)}
@@ -239,7 +239,7 @@ button{font:inherit; color:inherit; background:none; border:0; padding:0; cursor
 .mark.miss{box-shadow:inset 0 0 0 1px var(--line); background:repeating-linear-gradient(-45deg,transparent 0 2px,var(--line) 2px 3px)}
 .mark.done.d{background:var(--daily)} .mark.done.w{background:var(--weekly)} .mark.done.m{background:var(--monthly)}
 .mark.done{color:var(--surface)}
-:root[data-theme="dark"] .mark.done, :root:not([data-theme="light"]) .mark.done{color:#0D1011}
+:root[data-theme="dark"] .mark.done, :root:not([data-theme="light"]) .mark.done{color:#120E1B}
 .cellwrap.todaycol::after{
   content:""; position:absolute; inset:-3px -1px; border-left:1px solid var(--focus); border-right:1px solid var(--focus);
   pointer-events:none;
