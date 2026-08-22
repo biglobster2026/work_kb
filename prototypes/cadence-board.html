@@ -5,15 +5,15 @@
 
 <style>
 :root{
-  --paper:#F8F6FC; --surface:#FFFFFF; --surface-2:#F1EDF9; --sunk:#EAE5F4;
-  --line:#DFD8EE; --line-soft:#EDE8F7;
-  --ink:#16111F; --ink-2:#4C4360; --ink-3:#7E7594;
+  --paper:#FBFBFD; --surface:#FFFFFF; --surface-2:#F4F4F8; --sunk:#F3F3F7;
+  --line:#E3E3EA; --line-soft:#EFEFF4;
+  --ink:#15141A; --ink-2:#4E4C58; --ink-3:#86838F;
   --daily:#7A21F5; --daily-ink:#5B10C4; --daily-wash:#EADCFE;
-  --weekly:#2A5BE0; --weekly-ink:#1D4AC4; --weekly-wash:#DCE5FD;
-  --monthly:#B41C9C; --monthly-ink:#93157F; --monthly-wash:#F8D9F1;
+  --weekly:#2A5BE0; --weekly-ink:#1D4AC4; --weekly-wash:#E3EAFE;
+  --monthly:#C21FA8; --monthly-ink:#A0148A; --monthly-wash:#FCE1F7;
   --miss:#9B4F86;
   --focus:#7A21F5; --on-accent:#FFFFFF;
-  --shadow:0 1px 2px rgba(22,17,31,.05), 0 8px 24px -16px rgba(58,26,120,.35);
+  --shadow:0 1px 2px rgba(20,19,26,.05), 0 8px 24px -16px rgba(20,19,26,.24);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -24,7 +24,7 @@
     --weekly:#6E9EFF; --weekly-ink:#8DB2FF; --weekly-wash:#152449;
     --monthly:#E274D2; --monthly-ink:#EE94E0; --monthly-wash:#3D1338;
     --miss:#C784B4;
-    --focus:#A97BFF; --on-accent:#120E1B; --on-accent:#120E1B;
+    --focus:#A97BFF; --on-accent:#120E1B;
     --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 28px -18px rgba(0,0,0,.9);
   }
 }
@@ -118,7 +118,7 @@ button{font:inherit; color:inherit; background:none; border:0; padding:0; cursor
   transition:border-color .12s ease, background .12s ease;
 }
 .cell:hover{border-color:var(--ink-3)}
-.cell.pad{background:var(--sunk); border-color:transparent}
+.cell.pad{background:var(--sunk); border-color:var(--line-soft)}
 .cell.pad .dnum{color:var(--ink-3); opacity:.55}
 .cell.sel{border-color:var(--focus); box-shadow:inset 0 0 0 1px var(--focus)}
 .cell.today .dnum{
